@@ -11,5 +11,5 @@ object Minarrator : ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 		logger.info("Hello Fabric world!")
-	}
+    }
 }
