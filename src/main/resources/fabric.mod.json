@@ -11,10 +11,14 @@
 		"homepage": "https://fabricmc.net/",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
+
 	"license": "CC0-1.0",
 	"icon": "assets/mi-narrator/icon.png",
 	"environment": "*",
 	"entrypoints": {
+		"modmenu": [
+			"name.modid.ModMenuIntegration"
+		],
 		"main": [
 			{
 				"value": "name.modid.Minarrator",
@@ -44,5 +48,8 @@
 	},
 	"suggests": {
 		"another-mod": "*"
+	},
+	"modmenu": {
+		"update_checker": true
 	}
 }

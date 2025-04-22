@@ -23,6 +23,11 @@ repositories {
 		url = "https://api.modrinth.com/maven"
 		name = "Modrinth"
 	}
+
+	maven {
+		name = "Terraformers"
+		url = "https://maven.terraformersmc.com/"
+	}
 }
 
 loom {
@@ -52,6 +57,9 @@ dependencies {
 
 	// midnight config
 	modImplementation include ("maven.modrinth:midnightlib:${project.midnightlib_version}")
+
+	// modmenu
+	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 }
 
 processResources {
