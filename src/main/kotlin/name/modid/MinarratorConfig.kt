@@ -8,6 +8,7 @@ const val MODELPATH = "~/models/smollm2-360m-instruct-q8_0.gguf"
 
 
 class MinarratorConfig : MidnightConfig() {
+    @Suppress("unused")
     companion object {
         const val MODEL = "model"
         @Comment(category = MODEL) lateinit var modelPathComment: Comment
@@ -21,6 +22,7 @@ class MinarratorConfig : MidnightConfig() {
         @JvmField
         var modelPath: String = MODELPATH
 
+        @Suppress("unused")
         @Comment(category = MODEL) lateinit var modelConfiguration: Comment
         // temperature
         @Entry(category = MODEL, max = 1.0, min= 0.0) var temperature: Float = 0.5F
