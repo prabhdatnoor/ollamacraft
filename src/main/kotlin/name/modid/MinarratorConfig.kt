@@ -3,6 +3,10 @@ package eu.midnightdust.fabric.example.config
 import eu.midnightdust.lib.config.MidnightConfig
 import javax.swing.JFileChooser
 
+// global constant of filepath
+const val MODELPATH = "~/models/smollm2-360m-instruct-q8_0.gguf"
+
+
 class MinarratorConfig : MidnightConfig() {
     companion object {
         const val MODEL = "model"
@@ -15,7 +19,7 @@ class MinarratorConfig : MidnightConfig() {
             fileChooserType = JFileChooser.OPEN_DIALOG,
         )
         @JvmField
-        var modelPath: String = "~/models/smollm2-360m-instruct-q8_0.gguf"
+        var modelPath: String = MODELPATH
 
         @Comment(category = MODEL) lateinit var modelConfiguration: Comment
         // temperature
