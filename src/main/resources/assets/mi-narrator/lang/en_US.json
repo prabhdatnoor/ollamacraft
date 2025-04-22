@@ -1,0 +1,9 @@
+{
+  "mi-narrator.midnightconfig.title": "Minarrator Configuration",
+  "mi-narrator.midnightconfig.modelPathComment": "Select the GGUF model file for the AI",
+  "mi-narrator.midnightconfig.modelPath": "Model Path",
+  "mi-narrator.midnightconfig.modelPath.tooltip": "Path to the .gguf model file that will be used by the AI system",
+  "mi-narrator.midnightconfig.modelPath.fileChooser": "Select GGUF Model File",
+  "mi-narrator.midnightconfig.modelPath.fileFilter": "GGUF Model Files (.gguf)",
+  "mi-narrator.midnightconfig.category.files": "Model Configuration"
+}

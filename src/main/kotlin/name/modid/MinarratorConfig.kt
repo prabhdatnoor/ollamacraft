@@ -5,16 +5,18 @@ import javax.swing.JFileChooser
 
 class MinarratorConfig : MidnightConfig() {
     companion object {
-        @Comment(category = "files", name = "Select the path to your .gguf model file")
+        const val MODEL = "model"
+        @Comment(category = MODEL, name = "Select the path to your .gguf model file")
         lateinit var modelPathComment: Comment
 
         @Entry(
-            category = "files",
+            category = MODEL,
             selectionMode = JFileChooser.FILES_ONLY,
             fileExtensions = ["gguf"],
             fileChooserType = JFileChooser.OPEN_DIALOG,
-            name = "Model Path"
+            name = "Model Path",
         )
+        @JvmField
         var model_path: String = ""
     }
 }

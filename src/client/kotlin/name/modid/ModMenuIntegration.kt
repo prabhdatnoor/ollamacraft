@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screen.Screen
 class ModMenuIntegration : ModMenuApi {
     override fun getModConfigScreenFactory(): ConfigScreenFactory<*> {
         return ConfigScreenFactory { parent: Screen? ->
-            MidnightConfig.getScreen(parent, "minarrator")
+            MidnightConfig.getScreen(parent, "mi-narrator")
         }
     }
 }
