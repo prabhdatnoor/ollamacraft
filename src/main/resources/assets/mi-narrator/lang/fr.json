@@ -1,0 +1,9 @@
+{
+  "mi-narrator.midnightconfig.title": "Configuration de Minarrateur",
+  "mi-narrator.midnightconfig.modelPathComment": "Choisir le fichier modèle GGUF pour le Minarrateur",
+  "mi-narrator.midnightconfig.modelPath": "Chemin d'accès du model",
+  "mi-narrator.midnightconfig.modelPath.tooltip": "Chemin d'accès du fichier .gguf que le Minarrateur utilisera",
+  "mi-narrator.midnightconfig.modelPath.fileChooser": "Choisir le fichier modèle GGUF",
+  "mi-narrator.midnightconfig.modelPath.fileFilter": "Modèle GGUF (.gguf)",
+  "mi-narrator.midnightconfig.category.files": "Configuration du modèle"
+}
