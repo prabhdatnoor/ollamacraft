@@ -5,5 +5,8 @@
   "mi-narrator.midnightconfig.modelPath.tooltip": "Path to the .gguf model file that will be used by the AI system",
   "mi-narrator.midnightconfig.modelPath.fileChooser": "Select GGUF Model File",
   "mi-narrator.midnightconfig.modelPath.fileFilter": "GGUF Model Files (.gguf)",
-  "mi-narrator.midnightconfig.category.files": "Model Configuration"
+  "mi-narrator.midnightconfig.modelConfiguration": "Configure model settings",
+  "mi-narrator.midnightconfig.temperature": "Configure model temperature (0.0 to 1.0)",
+  "mi-narrator.midnightconfig.gpuLayers" : "Select number of gpu layers, 0 for no GPU",
+  "mi-narrator.midnightconfig.maxTokens" : "Max tokens"
 }
