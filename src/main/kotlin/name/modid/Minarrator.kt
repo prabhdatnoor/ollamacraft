@@ -1,6 +1,5 @@
 package name.modid
 
-import eu.midnightdust.fabric.example.config.MinarratorConfig
 import eu.midnightdust.lib.config.MidnightConfig
 import net.fabricmc.api.ModInitializer
 import org.slf4j.LoggerFactory

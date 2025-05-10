@@ -1,33 +1,16 @@
-package eu.midnightdust.fabric.example.config
+package name.modid
 
 import eu.midnightdust.lib.config.MidnightConfig
-import javax.swing.JFileChooser
-
-// global constant of filepath
-const val MODELPATH = "~/models/smollm2-360m-instruct-q8_0.gguf"
-
 
 class MinarratorConfig : MidnightConfig() {
     @Suppress("unused")
     companion object {
-        const val MODEL = "model"
-        @Comment(category = MODEL) lateinit var modelPathComment: Comment
+        @Entry(category = "Network", name = "Server Port", min = 1.0, max = 65535.0)
+        @JvmStatic
+        var port: Int = 25565  // Default Minecraft server port
 
-        @Entry(
-            category = MODEL,
-            selectionMode = JFileChooser.FILES_ONLY,
-            fileExtensions = ["gguf"],
-            fileChooserType = JFileChooser.OPEN_DIALOG,
-        )
-        @JvmField
-        var modelPath: String = MODELPATH
-
-        @Suppress("unused")
-        @Comment(category = MODEL) lateinit var modelConfiguration: Comment
-        // temperature
-        @Entry(category = MODEL, max = 1.0, min= 0.0) var temperature: Float = 0.5F
-        // gpu layers
-        @Entry(category= MODEL) var gpuLayers : Int = 0
-        @Entry(category = MODEL) var maxTokens : Int = 256
+        @Entry(category = "Network", name = "Server Host Address")
+        @JvmStatic
+        var hostAddress = "localhost"  // Default host address
     }
 }

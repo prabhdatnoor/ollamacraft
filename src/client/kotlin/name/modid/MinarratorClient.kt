@@ -2,10 +2,6 @@ package name.modid
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
-import eu.midnightdust.fabric.example.config.MinarratorConfig.Companion.gpuLayers
-import eu.midnightdust.fabric.example.config.MinarratorConfig.Companion.maxTokens
-import eu.midnightdust.fabric.example.config.MinarratorConfig.Companion.modelPath
-import eu.midnightdust.fabric.example.config.MinarratorConfig.Companion.temperature
 
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
@@ -16,11 +12,19 @@ import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 import java.util.function.Supplier
 
+var DEFAULT_MODELNAME = "SmolLM2-360M-Instruct-GGUF"
 
 object MinarratorClient : ClientModInitializer {
+	var MODELNAME : String = DEFAULT_MODELNAME
+
 	override fun onInitializeClient() {
 		try {
-			LlamaModel.initialize(modelPath, gpuLayers, temperature, maxTokens)
+			// initialize the api
+			LlamaAPI.initialize(
+				hostAddress = MinarratorConfig.hostAddress,
+				port = MinarratorConfig.port
+			)
+
 
 			CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<ServerCommandSource?>?, registryAccess: CommandRegistryAccess?, environment: RegistrationEnvironment? ->
 				dispatcher!!.register(
@@ -35,8 +39,10 @@ object MinarratorClient : ClientModInitializer {
 				)
 			})
 
-		} finally {
-			LlamaModel.close()
+		} catch (e: Exception) {
+			// handle error
+			println("Error initializing MinarratorClient: ${e.message}")
+			e.printStackTrace()
 		}
 	}
 
@@ -46,7 +52,7 @@ object MinarratorClient : ClientModInitializer {
 		// get the string prompt
 		val prompt = context.getArgument("prompt", String::class.java)
 		// generate
-		val output = LlamaModel.prompt(prompt, LlamaModel.GENERAL_PRE)
+		val output = LlamaAPI.prompt(MODELNAME, prompt, LlamaAPI.GENERAL_PRE)
 		// send feedback to the player
 		context.getSource()!!.sendFeedback(Supplier { Text.literal(output) }, false)
 		return 1
