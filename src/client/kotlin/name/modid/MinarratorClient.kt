@@ -5,26 +5,36 @@ import com.mojang.brigadier.context.CommandContext
 
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
+import net.minecraft.client.MinecraftClient
 import net.minecraft.command.CommandRegistryAccess
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.CommandManager.RegistrationEnvironment
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
+import net.minecraft.util.Formatting
 import java.util.function.Supplier
 
-var DEFAULT_MODELNAME = "SmolLM2-360M-Instruct-GGUF"
+import name.modid.Constants.Client.DEFAULT_MODELNAME
 
 object MinarratorClient : ClientModInitializer {
 	var MODELNAME : String = DEFAULT_MODELNAME
 
-	override fun onInitializeClient() {
-		try {
-			// initialize the api
-			LlamaAPI.initialize(
-				hostAddress = MinarratorConfig.hostAddress,
-				port = MinarratorConfig.port
-			)
+	private lateinit var api : PromptHandler
 
+    override fun onInitializeClient() {
+		try {
+			try {
+				// initialize the api
+				api =  PromptHandler (
+					MinarratorConfig.port,
+					MinarratorConfig.hostAddress
+				)
+			} catch(e: Exception) {
+				// handle error
+				println("Error initializing LlamaAPI: ${e.message}")
+				sendErrorMessageToWorld("LlamaAPI could not be initialized!")
+				e.printStackTrace()
+			}
 
 			CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<ServerCommandSource?>?, registryAccess: CommandRegistryAccess?, environment: RegistrationEnvironment? ->
 				dispatcher!!.register(
@@ -49,12 +59,29 @@ object MinarratorClient : ClientModInitializer {
 	// minar prompt <prompt>
 	// if given context
 	private fun executePrompt(context: CommandContext<ServerCommandSource?>): Int {
+		// require that api is initialized, otherwise throw an error and notify the player
+		if (! ::api.isInitialized) {
+			sendErrorMessageToPlayer(context, "Ollama API is not initialized. Please check your configuration.")
+			return 0
+		}
+
 		// get the string prompt
 		val prompt = context.getArgument("prompt", String::class.java)
-		// generate
-		val output = LlamaAPI.prompt(MODELNAME, prompt, LlamaAPI.GENERAL_PRE)
+		lateinit var output: String
+		try {
+			// generate
+			output = api.prompt(MODELNAME, prompt, Constants.Client.SystemPrompts.GENERAL)
+		} catch (e: Exception) {
+			// handle error
+			println("Error generating prompt: ${e.message}")
+			sendErrorMessageToPlayer(context, "Error generating prompt. Please refer to the logs.")
+			return 0
+		}
+
 		// send feedback to the player
 		context.getSource()!!.sendFeedback(Supplier { Text.literal(output) }, false)
 		return 1
 	}
+
+
 }

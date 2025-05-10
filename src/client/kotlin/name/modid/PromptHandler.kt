@@ -5,37 +5,14 @@ import io.github.ollama4j.models.chat.OllamaChatMessageRole
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder
 import io.github.ollama4j.utils.Options
 import io.github.ollama4j.utils.OptionsBuilder
+import name.modid.Constants.Client.DEFAULT_OLLAMA_HOST
+import name.modid.Constants.Client.DEFAULT_OLLAMA_PORT
+import name.modid.Constants.Client.SystemPrompts.NARRATOR
 
-object LlamaAPI {
-    private var port: Int = 11434
-    private var hostAddress: String = "localhost"
+class PromptHandler (port : Int = DEFAULT_OLLAMA_PORT, hostAddress: String = DEFAULT_OLLAMA_HOST) {
     private lateinit var ollamaAPI: OllamaAPI
-
-    // for the narrator
-    val NARRATOR_PRE = """
-        You are a very drunk Minecraft narrator. You misremember things, 
-        repeat yourself, and get overly emotional about blocks. You think 
-        you're profound but you're just slurring. Respond in 1-2 short 
-        sentences max (to save CPU).
-    """.trimIndent()
-
-    // for general prompts
-    val GENERAL_PRE = """
-        You are a very drunk Minecraft assistant. You misremember things, 
-        repeat yourself, and get overly emotional about blocks. You think 
-        you're profound but you're just slurring. Respond in 1-2 short 
-        sentences max (to save CPU)
-    """.trimIndent()
-
-    fun initialize(
-        hostAddress: String = this.hostAddress,
-        port: Int = this.port,
-    ) {
+    init {
         try {
-            // set values
-            this.hostAddress = hostAddress
-            this.port = port
-
             // setup api
             ollamaAPI = OllamaAPI("${hostAddress}:${port}")
             ollamaAPI.setVerbose(false)
@@ -58,7 +35,7 @@ object LlamaAPI {
     fun prompt(
         modelName: String,
         text: String,
-        preprompt: String = NARRATOR_PRE,
+        systemPrompt: String = NARRATOR,
         options: Options = OptionsBuilder().setTemperature(0.5f).setNumGpu(0).build()
     ): String {
 
@@ -71,14 +48,20 @@ object LlamaAPI {
     """.trimIndent()
 
 
-        var requestModel = chatRequestBuilder.withMessage(OllamaChatMessageRole.SYSTEM, preprompt)
+        var requestModel = chatRequestBuilder.withMessage(OllamaChatMessageRole.SYSTEM, systemPrompt)
             .withMessage(OllamaChatMessageRole.USER, prompt)
             .withOptions(options)
             .build()
 
 
-        return ollamaAPI.chat(requestModel)
-            .responseModel.message.content
+        var response = ollamaAPI.chat(requestModel).responseModel
+
+        // check if error
+        if (response.error != null) {
+            throw Exception("Error: ${response.error}")
+        }
+
+        return response.message.content
     }
 }
 
