@@ -36,7 +36,7 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"mi-narrator" {
+		"llamacraft" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}

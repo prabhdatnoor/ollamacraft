@@ -5,18 +5,16 @@ import com.mojang.brigadier.context.CommandContext
 
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
-import net.minecraft.client.MinecraftClient
 import net.minecraft.command.CommandRegistryAccess
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.CommandManager.RegistrationEnvironment
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
-import net.minecraft.util.Formatting
 import java.util.function.Supplier
 
 import name.modid.Constants.Client.DEFAULT_MODELNAME
 
-object MinarratorClient : ClientModInitializer {
+object LlamaCraftClient : ClientModInitializer {
 	var MODELNAME : String = DEFAULT_MODELNAME
 
 	private lateinit var api : PromptHandler
@@ -26,8 +24,8 @@ object MinarratorClient : ClientModInitializer {
 			try {
 				// initialize the api
 				api =  PromptHandler (
-					MinarratorConfig.port,
-					MinarratorConfig.hostAddress
+					LlamaCraftConfig.port,
+					LlamaCraftConfig.hostAddress
 				)
 			} catch(e: Exception) {
 				// handle error
@@ -36,9 +34,10 @@ object MinarratorClient : ClientModInitializer {
 				e.printStackTrace()
 			}
 
+			// register a prompt command
 			CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<ServerCommandSource?>?, registryAccess: CommandRegistryAccess?, environment: RegistrationEnvironment? ->
 				dispatcher!!.register(
-					CommandManager.literal("minar")
+					CommandManager.literal("llama")
 						.then(
 							CommandManager.literal("prompt")
 								.then(
@@ -48,10 +47,9 @@ object MinarratorClient : ClientModInitializer {
 						)
 				)
 			})
-
 		} catch (e: Exception) {
 			// handle error
-			println("Error initializing MinarratorClient: ${e.message}")
+			println("Error initializing LLamaCraftClient: ${e.message}")
 			e.printStackTrace()
 		}
 	}

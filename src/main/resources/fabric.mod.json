@@ -1,8 +1,8 @@
 {
 	"schemaVersion": 1,
-	"id": "mi-narrator",
+	"id": "llamacraft",
 	"version": "${version}",
-	"name": "mi-narrator",
+	"name": "llamacraft",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
 		"Me!"
@@ -13,7 +13,7 @@
 	},
 
 	"license": "CC0-1.0",
-	"icon": "assets/mi-narrator/icon.png",
+	"icon": "assets/llamacraft/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"modmenu": [
@@ -21,21 +21,21 @@
 		],
 		"main": [
 			{
-				"value": "name.modid.Minarrator",
+				"value": "LlamaCraft",
 				"adapter": "kotlin"
 			}
 		],
 		"client": [
 			{
-				"value": "name.modid.MinarratorClient",
+				"value": "LlamaClient",
 				"adapter": "kotlin"
 			}
 		]
 	},
 	"mixins": [
-		"mi-narrator.mixins.json",
+		"llamacraft.mixins.json",
 		{
-			"config": "mi-narrator.client.mixins.json",
+			"config": "llamacraft.client.mixins.json",
 			"environment": "client"
 		}
 	],

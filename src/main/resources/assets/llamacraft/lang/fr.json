@@ -1,0 +1,5 @@
+{
+  "llamacraft.midnightconfig.title": "Configuration de LlamaCraft",
+  "llamacraft.midnightconfig.hostAddress": "Sélectionner l'hôte du serveur Ollama (par défaut : http://localhost)",
+  "llamacraft.midnightconfig.port": "Sélectionner le port du serveur Ollama (par défaut : 11434)"
+}
