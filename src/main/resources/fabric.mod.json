@@ -21,13 +21,13 @@
 		],
 		"main": [
 			{
-				"value": "LlamaCraft",
+				"value": "name.modid.LlamaCraft",
 				"adapter": "kotlin"
 			}
 		],
 		"client": [
 			{
-				"value": "LlamaClient",
+				"value": "name.modid.LlamaCraftClient",
 				"adapter": "kotlin"
 			}
 		]
