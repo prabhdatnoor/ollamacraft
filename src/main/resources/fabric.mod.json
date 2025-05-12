@@ -1,8 +1,8 @@
 {
 	"schemaVersion": 1,
-	"id": "llamacraft",
+	"id": "ollamacraft",
 	"version": "${version}",
-	"name": "llamacraft",
+	"name": "ollamacraft",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
 		"Me!"
@@ -13,7 +13,7 @@
 	},
 
 	"license": "CC0-1.0",
-	"icon": "assets/llamacraft/icon.png",
+	"icon": "assets/ollamacraft/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"modmenu": [
@@ -21,21 +21,21 @@
 		],
 		"main": [
 			{
-				"value": "name.modid.LlamaCraft",
+				"value": "name.modid.OLlamaCraft",
 				"adapter": "kotlin"
 			}
 		],
 		"client": [
 			{
-				"value": "name.modid.LlamaCraftClient",
+				"value": "name.modid.OLlamaCraftClient",
 				"adapter": "kotlin"
 			}
 		]
 	},
 	"mixins": [
-		"llamacraft.mixins.json",
+		"ollamacraft.mixins.json",
 		{
-			"config": "llamacraft.client.mixins.json",
+			"config": "ollamacraft.client.mixins.json",
 			"environment": "client"
 		}
 	],

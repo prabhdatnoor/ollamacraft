@@ -4,7 +4,7 @@ import eu.midnightdust.lib.config.MidnightConfig
 import name.modid.Constants.Client.DEFAULT_OLLAMA_HOST
 import name.modid.Constants.Client.DEFAULT_OLLAMA_PORT
 
-class LlamaCraftConfig : MidnightConfig() {
+class OLlamaCraftConfig : MidnightConfig() {
     @Suppress("unused")
     companion object {
         @Entry(category = "Network", name = "Server Host Address")

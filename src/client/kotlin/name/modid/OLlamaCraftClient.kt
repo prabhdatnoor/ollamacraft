@@ -14,7 +14,7 @@ import java.util.function.Supplier
 
 import name.modid.Constants.Client.DEFAULT_MODELNAME
 
-object LlamaCraftClient : ClientModInitializer {
+object OLlamaCraftClient : ClientModInitializer {
 	var MODELNAME : String = DEFAULT_MODELNAME
 
 	private lateinit var api : PromptHandler
@@ -24,8 +24,8 @@ object LlamaCraftClient : ClientModInitializer {
 			try {
 				// initialize the api
 				api =  PromptHandler (
-					LlamaCraftConfig.port,
-					LlamaCraftConfig.hostAddress
+					OLlamaCraftConfig.port,
+					OLlamaCraftConfig.hostAddress
 				)
 			} catch(e: Exception) {
 				// handle error
@@ -37,7 +37,7 @@ object LlamaCraftClient : ClientModInitializer {
 			// register a prompt command
 			CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<ServerCommandSource?>?, registryAccess: CommandRegistryAccess?, environment: RegistrationEnvironment? ->
 				dispatcher!!.register(
-					CommandManager.literal("llama")
+					CommandManager.literal("ollama")
 						.then(
 							CommandManager.literal("prompt")
 								.then(
@@ -49,7 +49,7 @@ object LlamaCraftClient : ClientModInitializer {
 			})
 		} catch (e: Exception) {
 			// handle error
-			println("Error initializing LLamaCraftClient: ${e.message}")
+			println("Error initializing OLLamaCraftClient: ${e.message}")
 			e.printStackTrace()
 		}
 	}
