@@ -65,10 +65,14 @@ object OLlamaCraftClient : ClientModInitializer {
 
 		// get the string prompt
 		val prompt = context.getArgument("prompt", String::class.java)
+
+		// get the username of the user or just use User
+		val userName = context.source?.player?.displayName?.string ?: "User"
+
 		lateinit var output: String
 		try {
 			// generate
-			output = api.prompt(MODELNAME, prompt, Constants.Client.SystemPrompts.GENERAL)
+			output = api.prompt(MODELNAME, prompt, userName, Constants.Client.SystemPrompts.GENERAL)
 		} catch (e: Exception) {
 			// handle error
 			println("Error generating prompt: ${e.message}")

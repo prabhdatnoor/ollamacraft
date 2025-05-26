@@ -35,15 +35,15 @@ class PromptHandler (port : Int = DEFAULT_OLLAMA_PORT, hostAddress: String = DEF
     fun prompt(
         modelName: String,
         text: String,
+        userName: String = "User",
         systemPrompt: String = NARRATOR,
         options: Options = OptionsBuilder().setTemperature(0.5f).setNumGpu(0).build()
     ): String {
-
         // select model
         var chatRequestBuilder = OllamaChatRequestBuilder.getInstance(modelName)
 
         val prompt = """
-        User: $text
+        $userName: $text
         Llama: 
     """.trimIndent()
 
