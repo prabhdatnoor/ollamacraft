@@ -63,6 +63,10 @@ class PromptHandler (port : Int = DEFAULT_OLLAMA_PORT, hostAddress: String = DEF
 
         return response.message.content
     }
+
+    fun listModels(): List<String> {
+        return ollamaAPI.listModels().map{ it.name }
+    }
 }
 
 
