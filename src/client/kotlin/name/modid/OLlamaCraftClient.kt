@@ -58,6 +58,20 @@ object OLlamaCraftClient : ClientModInitializer {
                         )
                 )
             })
+
+            // register a select models command
+            CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<ServerCommandSource?>?, registryAccess: CommandRegistryAccess?, environment: RegistrationEnvironment? ->
+                dispatcher!!.register(
+                    CommandManager.literal("ollama")
+                        .then(
+                            CommandManager.literal("select")
+                        ).then(
+                            CommandManager.argument("model", StringArgumentType.word())
+                                .executes(this::selectModel)
+                        )
+                )
+            })
+
         } catch (e: Exception) {
             // handle error
             println("Error initializing OLLamaCraftClient: ${e.message}")
@@ -72,7 +86,7 @@ object OLlamaCraftClient : ClientModInitializer {
         }
     }
 
-    // minar prompt <prompt>
+    // ollama prompt <prompt>
     // if given context
     private fun executePrompt(context: CommandContext<ServerCommandSource?>): Int {
         // get the string prompt
@@ -94,6 +108,44 @@ object OLlamaCraftClient : ClientModInitializer {
 
         // send feedback to the player
         context.getSource()!!.sendFeedback(Supplier { Text.literal(output) }, false)
+        return 1
+    }
+
+    fun selectModel(context: CommandContext<ServerCommandSource?>): Int {
+        var model = context.getArgument("model", String::class.java)
+
+        // if model is null
+        if (model == null) {
+            println("No model provided!. Please provide exact model name or index from `ollama list`")
+        }
+
+        val models = api.listModels()
+
+        if (models.isEmpty()) {
+            println("No models in Ollama!")
+        }
+
+        // see if model exists in model list
+        if (models.find { it == model } == null) {
+            // try to parse model int
+            val modelParsed = model.toIntOrNull()
+            if (modelParsed == null || modelParsed < 1 || modelParsed > models.size) {
+                println("Model, or model index not found: $model")
+                sendErrorMessageToPlayer(
+                    context,
+                    "Ollama model could not be found. If using index from `ollama list`, please ensure you are using a valid index. Otherwise please check the model name is correct"
+                )
+                return 0
+            }
+
+            model = models[modelParsed]
+        }
+
+        // set model name
+        MODELNAME = model
+
+        // tell server what model we set
+        context.getSource()!!.sendFeedback(Supplier { Text.literal("Set model to: $model") }, false)
         return 1
     }
 
