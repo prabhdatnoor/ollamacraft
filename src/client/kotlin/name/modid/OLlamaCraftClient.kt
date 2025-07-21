@@ -45,29 +45,14 @@ object OLlamaCraftClient : ClientModInitializer {
                                     CommandManager.argument("prompt", StringArgumentType.greedyString())
                                         .executes(this::executePrompt)
                                 )
-                        )
-                )
-            })
-
-            // register a list models command
-            CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<ServerCommandSource?>?, registryAccess: CommandRegistryAccess?, environment: RegistrationEnvironment? ->
-                dispatcher!!.register(
-                    CommandManager.literal("ollama")
-                        .then(
-                            CommandManager.literal("list").executes(this::listModels)
-                        )
-                )
-            })
-
-            // register a select models command
-            CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<ServerCommandSource?>?, registryAccess: CommandRegistryAccess?, environment: RegistrationEnvironment? ->
-                dispatcher!!.register(
-                    CommandManager.literal("ollama")
-                        .then(
-                            CommandManager.literal("select")
                         ).then(
-                            CommandManager.argument("model", StringArgumentType.word())
-                                .executes(this::selectModel)
+                            CommandManager.literal("list").executes(this::listModels)
+                        ).then(
+                            CommandManager.literal("select")
+                                .then(
+                                    CommandManager.argument("model", StringArgumentType.string())
+                                        .executes(this::selectModel)
+                                )
                         )
                 )
             })
