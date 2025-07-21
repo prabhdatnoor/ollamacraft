@@ -123,7 +123,8 @@ object OLlamaCraftClient : ClientModInitializer {
                 return 0
             }
 
-            model = models[modelParsed]
+            // convert to 0-index
+            model = models[modelParsed - 1]
         }
 
         // set model name
