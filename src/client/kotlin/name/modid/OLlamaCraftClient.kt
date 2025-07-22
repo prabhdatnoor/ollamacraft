@@ -14,6 +14,9 @@ import net.minecraft.text.Text
 import java.util.function.Supplier
 
 import name.modid.Constants.Client.DEFAULT_MODELNAME
+import net.minecraft.entity.Entity
+import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.player.PlayerEntity
 
 object OLlamaCraftClient : ClientModInitializer {
     var MODELNAME: String = DEFAULT_MODELNAME
@@ -43,7 +46,7 @@ object OLlamaCraftClient : ClientModInitializer {
                             CommandManager.literal("prompt")
                                 .then(
                                     CommandManager.argument("prompt", StringArgumentType.greedyString())
-                                        .executes(this::executePrompt)
+                                        .executes(this::executeManualPrompt)
                                 )
                         ).then(
                             CommandManager.literal("list").executes(this::listModels)
@@ -64,22 +67,55 @@ object OLlamaCraftClient : ClientModInitializer {
         }
     }
 
-    private fun checkApi(context: CommandContext<ServerCommandSource?>) {
-        if (!::api.isInitialized) {
-            sendErrorMessageToPlayer(context, "Ollama API is not initialized. Please check your configuration.")
-            throw IllegalStateException("Ollama API is not initialized!")
+    private fun onEntityDamage(entity: Entity, damageSource: DamageSource, amount: Double) {
+        if (entity is PlayerEntity) {
+            val player: PlayerEntity = entity
+
+            if (player.world.isClient) {
+                // player's health percent now
+                val healthPercentage: Int = ((player.health / player.maxHealth) / 100f).toInt()
+                // how much percent of their health was removed
+                val damagePercentage: Int = ((amount / player.maxHealth) / 100f).toInt()
+                // distance from player
+                val distance = player.distanceTo(damageSource.source)
+
+                var prompt =
+                    "${damageSource.name} did $damagePercentage % to the player, from $distance units aways. Player's health is at $healthPercentage % now"
+
+                // if player health is now very low
+                if (healthPercentage < 0.10f) {
+                    prompt += "Player health is very low"
+                    // if the hit took more than 50% damage off
+                } else if (damagePercentage > 0.5f) {
+                    prompt += "This hit dealth huge damage"
+                    // for 10% of all events do this
+                } else if (boolByPercentage(70)) {
+                    // 70% of the time we dont want to send a prompt
+                    prompt = ""
+                }
+
+                executePrompt(player, prompt)
+
+            }
         }
+    }
+
+    private fun executeManualPrompt(context: CommandContext<ServerCommandSource?>): Int {
+        // get the string prompt
+        val prompt = context.getArgument("prompt", String::class.java)
+
+        return executePrompt(context.source.entity, prompt)
     }
 
     // ollama prompt <prompt>
     // if given context
-    private fun executePrompt(context: CommandContext<ServerCommandSource?>): Int {
-        // get the string prompt
-        val prompt = context.getArgument("prompt", String::class.java)
+    private fun executePrompt(entity: Entity?, prompt: String): Int {
+        if (entity == null) {
+            println("no valid source for action provided!")
+            return 0
+        }
 
-        // get the username of the user or just use User
-        val userName = context.source?.player?.displayName?.string ?: "User"
-
+        val userName = entity.displayName?.string ?: "User"
         lateinit var output: String
         try {
             // generate
@@ -87,12 +123,12 @@ object OLlamaCraftClient : ClientModInitializer {
         } catch (e: Exception) {
             // handle error
             println("Error generating prompt: ${e.message}")
-            sendErrorMessageToPlayer(context, "Error generating prompt. Please refer to the logs.")
+            sendErrorMessageToPlayer(entity, "Error generating prompt. Please refer to the logs.")
             return 0
         }
 
         // send feedback to the player
-        context.getSource()!!.sendFeedback(Supplier { Text.literal(output) }, false)
+        entity.server?.sendMessage(Text.literal(output))
         return 1
     }
 
@@ -117,7 +153,7 @@ object OLlamaCraftClient : ClientModInitializer {
             if (modelParsed == null || modelParsed < 1 || modelParsed > models.size) {
                 println("Model, or model index not found: $model")
                 sendErrorMessageToPlayer(
-                    context,
+                    context.source?.entity,
                     "Ollama model could not be found. If using index from `ollama list`, please ensure you are using a valid index. Otherwise please check the model name is correct"
                 )
                 return 0
@@ -143,7 +179,7 @@ object OLlamaCraftClient : ClientModInitializer {
             output = api.listModels().mapIndexed { index, string -> "${index + 1}: $string" }.joinToString("\n")
         } catch (e: Exception) {
             println("Error listing models: ${e.message}")
-            sendErrorMessageToPlayer(context, "Error listing models. Please refer to the logs.")
+            sendErrorMessageToPlayer(context.source?.entity, "Error listing models. Please refer to the logs.")
             return 0
         }
 
