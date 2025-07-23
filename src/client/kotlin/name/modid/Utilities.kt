@@ -3,16 +3,17 @@ package name.modid
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.Entity
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 
 // send error message to player
-fun sendErrorMessageToPlayer(entity: Entity?, message: String) {
+fun sendErrorMessageToPlayer(entity: PlayerEntity?, message: String) {
     if (entity == null) {
         return
     }
-    entity.server?.sendMessage(Text.literal(message).formatted(Formatting.RED))
+    entity.sendMessage(Text.literal(message).formatted(Formatting.RED), false)
 }
 
 // send error message to minecraft world

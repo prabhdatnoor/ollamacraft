@@ -104,12 +104,12 @@ object OLlamaCraftClient : ClientModInitializer {
         // get the string prompt
         val prompt = context.getArgument("prompt", String::class.java)
 
-        return executePrompt(context.source?.entity, prompt)
+        return executePrompt(context.source?.entity as PlayerEntity?, prompt)
     }
 
     // ollama prompt <prompt>
     // if given context
-    private fun executePrompt(entity: Entity?, prompt: String): Int {
+    private fun executePrompt(entity: PlayerEntity?, prompt: String): Int {
         if (entity == null) {
             println("no valid source for action provided!")
             return 0
@@ -128,7 +128,7 @@ object OLlamaCraftClient : ClientModInitializer {
         }
 
         // send feedback to the player
-        entity.server?.sendMessage(Text.literal(output))
+        entity.sendMessage(Text.literal(output), false)
         return 1
     }
 
@@ -153,7 +153,7 @@ object OLlamaCraftClient : ClientModInitializer {
             if (modelParsed == null || modelParsed < 1 || modelParsed > models.size) {
                 println("Model, or model index not found: $model")
                 sendErrorMessageToPlayer(
-                    context.source?.entity,
+                    context.source?.entity as PlayerEntity?,
                     "Ollama model could not be found. If using index from `ollama list`, please ensure you are using a valid index. Otherwise please check the model name is correct"
                 )
                 return 0
@@ -179,7 +179,10 @@ object OLlamaCraftClient : ClientModInitializer {
             output = api.listModels().mapIndexed { index, string -> "${index + 1}: $string" }.joinToString("\n")
         } catch (e: Exception) {
             println("Error listing models: ${e.message}")
-            sendErrorMessageToPlayer(context.source?.entity, "Error listing models. Please refer to the logs.")
+            sendErrorMessageToPlayer(
+                context.source?.entity as PlayerEntity?,
+                "Error listing models. Please refer to the logs."
+            )
             return 0
         }
 
