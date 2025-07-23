@@ -104,7 +104,7 @@ object OLlamaCraftClient : ClientModInitializer {
         // get the string prompt
         val prompt = context.getArgument("prompt", String::class.java)
 
-        return executePrompt(context.source.entity, prompt)
+        return executePrompt(context.source?.entity, prompt)
     }
 
     // ollama prompt <prompt>
