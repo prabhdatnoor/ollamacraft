@@ -67,6 +67,7 @@ object OLlamaCraftClient : ClientModInitializer {
         }
     }
 
+    // TODO: trigger this event properly
     private fun onEntityDamage(entity: Entity, damageSource: DamageSource, amount: Double) {
         if (entity is PlayerEntity) {
             val player: PlayerEntity = entity
