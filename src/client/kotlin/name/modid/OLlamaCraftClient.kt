@@ -3,20 +3,21 @@ package name.modid
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
-
+import name.modid.Constants.Client.DEFAULT_MODELNAME
+import name.modid.boolByPercentage
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AfterDamage
 import net.minecraft.command.CommandRegistryAccess
+import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.CommandManager.RegistrationEnvironment
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 import java.util.function.Supplier
-
-import name.modid.Constants.Client.DEFAULT_MODELNAME
-import net.minecraft.entity.Entity
-import net.minecraft.entity.damage.DamageSource
-import net.minecraft.entity.player.PlayerEntity
 
 object OLlamaCraftClient : ClientModInitializer {
     var MODELNAME: String = DEFAULT_MODELNAME
@@ -60,6 +61,26 @@ object OLlamaCraftClient : ClientModInitializer {
                 )
             })
 
+
+            // This code is injected into the start of MinecraftClient.run()V
+            ServerLivingEntityEvents.AFTER_DAMAGE.register(AfterDamage { e: LivingEntity?, damageSource: DamageSource?, damage: Float, entityHealth: Float, entity: Boolean ->
+                // if entity doesnt exist or isnt a player
+                if (e!= null && !e.isPlayer) {
+                    return@AfterDamage
+                }
+
+                var damageSourceName = damageSource?.name ?: "Unknown"
+                if (damageSourceName.startsWith("inWall")) {
+                    damageSourceName = "in wall"
+                }
+
+                println("Entity $e took $damage damage from $damageSourceName")
+
+                if (e != null) {
+                    onPlayerDamage(e as PlayerEntity, damageSource as DamageSource, damage.toDouble())
+                }
+            })
+
         } catch (e: Exception) {
             // handle error
             println("Error initializing OLLamaCraftClient: ${e.message}")
@@ -67,39 +88,32 @@ object OLlamaCraftClient : ClientModInitializer {
         }
     }
 
-    // TODO: trigger this event properly
-    private fun onEntityDamage(entity: Entity, damageSource: DamageSource, amount: Double) {
-        if (entity is PlayerEntity) {
-            val player: PlayerEntity = entity
+    private fun onPlayerDamage(playerEntity: PlayerEntity, damageSource: DamageSource, amount: Double) {
+        // player's health percent now
+        val healthPercentage: Int = ((playerEntity.health / playerEntity.maxHealth) / 100f).toInt()
+        // how much percent of their health was removed
+        val damagePercentage: Int = ((amount / playerEntity.maxHealth) / 100f).toInt()
+        // distance from entity
+        val distance = playerEntity.distanceTo(damageSource.source)
 
-            if (player.world.isClient) {
-                // player's health percent now
-                val healthPercentage: Int = ((player.health / player.maxHealth) / 100f).toInt()
-                // how much percent of their health was removed
-                val damagePercentage: Int = ((amount / player.maxHealth) / 100f).toInt()
-                // distance from player
-                val distance = player.distanceTo(damageSource.source)
+        var prompt =
+            "${damageSource.name} did $damagePercentage % to the player, from $distance units aways. Player's health is at $healthPercentage % now"
 
-                var prompt =
-                    "${damageSource.name} did $damagePercentage % to the player, from $distance units aways. Player's health is at $healthPercentage % now"
-
-                // if player health is now very low
-                if (healthPercentage < 0.10f) {
-                    prompt += "Player health is very low"
-                    // if the hit took more than 50% damage off
-                } else if (damagePercentage > 0.5f) {
-                    prompt += "This hit dealth huge damage"
-                    // for 10% of all events do this
-                } else if (boolByPercentage(70)) {
-                    // 70% of the time we dont want to send a prompt
-                    prompt = ""
-                }
-
-                executePrompt(player, prompt)
-
-            }
+        // if player health is now very low
+        if (healthPercentage < 0.10f) {
+            prompt += "Player health is very low"
+            // if the hit took more than 50% damage off
+        } else if (damagePercentage > 0.5f) {
+            prompt += "This hit dealth huge damage"
+            // for 10% of all events do this
+        } else if (boolByPercentage(70)) {
+            // 70% of the time we dont want to send a prompt
+            prompt = ""
         }
+
+        executePrompt(playerEntity, prompt)
     }
+
 
     private fun executeManualPrompt(context: CommandContext<ServerCommandSource?>): Int {
         // get the string prompt
