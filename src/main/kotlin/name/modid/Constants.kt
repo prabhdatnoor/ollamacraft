@@ -4,7 +4,7 @@ object Constants {
     object Client {
         const val DEFAULT_OLLAMA_HOST = "http://localhost"
         const val DEFAULT_OLLAMA_PORT = 11434
-        const val DEFAULT_MODELNAME = "hf.co/huggingfacetb/smollm2-360m-instruct-gguf"
+        const val DEFAULT_MODELNAME = "hf.co/huggingfacetb/smollm2-1.7b-instruct-gguf"
 
         object SystemPrompts {
             // for the narrator
