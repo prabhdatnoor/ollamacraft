@@ -17,6 +17,7 @@ import net.minecraft.server.command.CommandManager.RegistrationEnvironment
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 import java.util.function.Supplier
+import kotlin.random.Random
 
 object OllamaCraftClient : ClientModInitializer {
     var MODELNAME: String = DEFAULT_MODELNAME
@@ -89,20 +90,25 @@ object OllamaCraftClient : ClientModInitializer {
 
     private fun onPlayerDamage(playerEntity: PlayerEntity, damageSource: DamageSource, amount: Double) {
         // player's health percent now
-        val healthPercentage: Int = ((playerEntity.health / playerEntity.maxHealth) / 100f).toInt()
+        val healthPercentage: Int = ((playerEntity.health / playerEntity.maxHealth) * 100f).toInt()
         // how much percent of their health was removed
-        val damagePercentage: Int = ((amount / playerEntity.maxHealth) / 100f).toInt()
+        val damagePercentage: Int = ((amount / playerEntity.maxHealth) * 100f).toInt()
         // distance from entity
-        val distance = playerEntity.distanceTo(damageSource.source)
+        var distance: String = ""
+
+        if (damageSource.source != null) {
+            val distanceUnits = playerEntity.distanceTo(damageSource.source)
+           distance = ", from $distanceUnits units away";
+        }
 
         var prompt =
-            "${damageSource.name} did $damagePercentage % to the player, from $distance units aways. Player's health is at $healthPercentage % now"
+            "Player was just damaged. here is info: ${damageSource.name} did $damagePercentage % to the player$distance. Player's health is at $healthPercentage % now. Some more info on damage source: ${damageSource.type.toString()}"
 
         // if player health is now very low
         if (healthPercentage < 0.10f) {
             prompt += "Player health is very low"
             // if the hit took more than 50% damage off
-        } else if (damagePercentage > 0.5f) {
+        } else if (damagePercentage >= 0.35f) {
             prompt += "This hit dealth huge damage"
             // for 10% of all events do this
         } else if (boolByPercentage(70)) {
@@ -204,4 +210,9 @@ object OllamaCraftClient : ClientModInitializer {
         context.getSource()!!.sendFeedback(Supplier { Text.literal(output) }, false)
         return 1
     }
+}
+
+// % chance to return true. provide as int 0-100
+fun boolByPercentage(percent: Int): Boolean {
+    return Random.nextFloat() < (percent / 100)
 }
