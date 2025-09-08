@@ -5,7 +5,7 @@ import net.fabricmc.api.ModInitializer
 import org.slf4j.LoggerFactory
 
 
-object OLlamaCraft : ModInitializer {
+object OllamaCraft : ModInitializer {
     private val logger = LoggerFactory.getLogger("ollamacraft")
 
 	override fun onInitialize() {
@@ -13,7 +13,7 @@ object OLlamaCraft : ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 		logger.info("Hello Fabric world!")
-        MidnightConfig.init("ollamacraft", OLlamaCraftConfig::class.java)
+        MidnightConfig.init("ollamacraft", OllamaCraftConfig::class.java)
     }
 }
 

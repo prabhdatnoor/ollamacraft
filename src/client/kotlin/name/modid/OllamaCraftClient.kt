@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import name.modid.Constants.Client.DEFAULT_MODELNAME
-import name.modid.boolByPercentage
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
@@ -19,7 +18,7 @@ import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 import java.util.function.Supplier
 
-object OLlamaCraftClient : ClientModInitializer {
+object OllamaCraftClient : ClientModInitializer {
     var MODELNAME: String = DEFAULT_MODELNAME
 
     private lateinit var api: PromptHandler
@@ -29,8 +28,8 @@ object OLlamaCraftClient : ClientModInitializer {
             try {
                 // initialize the api
                 api = PromptHandler(
-                    OLlamaCraftConfig.port,
-                    OLlamaCraftConfig.hostAddress
+                    OllamaCraftConfig.port,
+                    OllamaCraftConfig.hostAddress
                 )
             } catch (e: Exception) {
                 // handle error

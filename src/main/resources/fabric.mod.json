@@ -21,13 +21,13 @@
 		],
 		"main": [
 			{
-				"value": "name.modid.OLlamaCraft",
+				"value": "name.modid.OllamaCraft",
 				"adapter": "kotlin"
 			}
 		],
 		"client": [
 			{
-				"value": "name.modid.OLlamaCraftClient",
+				"value": "name.modid.OllamaCraftClient",
 				"adapter": "kotlin"
 			}
 		]
