@@ -139,7 +139,7 @@ object OllamaCraftClient : ClientModInitializer {
         lateinit var output: String
         try {
             // generate
-            output = api.prompt(MODELNAME, prompt, userName, Constants.Client.SystemPrompts.GENERAL)
+            output = api.prompt(MODELNAME, prompt, userName, Constants.Client.SystemPrompts.EVENT)
         } catch (e: Exception) {
             // handle error
             println("Error generating prompt: ${e.message}")
