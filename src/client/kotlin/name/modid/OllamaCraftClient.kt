@@ -3,7 +3,6 @@ package name.modid
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
-import name.modid.Constants.Client.DEFAULT_MODELNAME
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
@@ -20,7 +19,7 @@ import java.util.function.Supplier
 import kotlin.random.Random
 
 object OllamaCraftClient : ClientModInitializer {
-    var MODELNAME: String = DEFAULT_MODELNAME
+    lateinit var MODELNAME: String
 
     private lateinit var api: PromptHandler
 
@@ -40,7 +39,7 @@ object OllamaCraftClient : ClientModInitializer {
             }
 
             // register a prompt command
-            CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<ServerCommandSource?>?, registryAccess: CommandRegistryAccess?, environment: RegistrationEnvironment? ->
+            CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<ServerCommandSource?>?, _: CommandRegistryAccess?, _: RegistrationEnvironment? ->
                 dispatcher!!.register(
                     CommandManager.literal("ollama")
                         .then(
@@ -63,7 +62,7 @@ object OllamaCraftClient : ClientModInitializer {
 
 
             // This code is injected into the start of MinecraftClient.run()V
-            ServerLivingEntityEvents.AFTER_DAMAGE.register(AfterDamage { e: LivingEntity?, damageSource: DamageSource?, damage: Float, entityHealth: Float, entity: Boolean ->
+            ServerLivingEntityEvents.AFTER_DAMAGE.register(AfterDamage { e: LivingEntity?, damageSource: DamageSource?, damage: Float, _: Float, _: Boolean ->
                 // if entity doesnt exist or isnt a player
                 if (e!= null && !e.isPlayer) {
                     return@AfterDamage
@@ -94,11 +93,11 @@ object OllamaCraftClient : ClientModInitializer {
         // how much percent of their health was removed
         val damagePercentage: Int = ((amount / playerEntity.maxHealth) * 100f).toInt()
         // distance from entity
-        var distance: String = ""
+        var distance = ""
 
         if (damageSource.source != null) {
             val distanceUnits = playerEntity.distanceTo(damageSource.source)
-           distance = ", from $distanceUnits units away";
+           distance = ", from $distanceUnits units away"
         }
 
         var prompt =
@@ -187,7 +186,7 @@ object OllamaCraftClient : ClientModInitializer {
         MODELNAME = model
 
         // tell server what model we set
-        context.getSource()!!.sendFeedback(Supplier { Text.literal("Set model to: $model") }, false)
+        context.getSource()!!.sendFeedback({ Text.literal("Set model to: $model") }, false)
         return 1
     }
 
@@ -207,7 +206,7 @@ object OllamaCraftClient : ClientModInitializer {
         }
 
         // send list to player
-        context.getSource()!!.sendFeedback(Supplier { Text.literal(output) }, false)
+        context.getSource()!!.sendFeedback({ Text.literal(output) }, false)
         return 1
     }
 }

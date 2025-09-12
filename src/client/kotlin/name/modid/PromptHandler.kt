@@ -24,6 +24,11 @@ class PromptHandler (port : Int = DEFAULT_OLLAMA_PORT, hostAddress: String = DEF
             } else {
                 println("Ollama API initialized successfully at $hostAddress:$port")
             }
+
+            ollamaAPI.listModels().firstOrNull()?.let {
+                println("Default model: ${it.name}")
+                OllamaCraftClient.MODELNAME = it.name
+            }
         } catch (e: Exception) {
             // handle error
             println("Error initializing Ollama API: ${e.message}")
@@ -40,7 +45,7 @@ class PromptHandler (port : Int = DEFAULT_OLLAMA_PORT, hostAddress: String = DEF
         options: Options = OptionsBuilder().setTemperature(0.5f).setNumGpu(0).build()
     ): String {
         // select model
-        var chatRequestBuilder = OllamaChatRequestBuilder.getInstance(modelName)
+        val chatRequestBuilder = OllamaChatRequestBuilder.getInstance(modelName)
 
         val prompt = """
         $userName: $text
@@ -48,13 +53,13 @@ class PromptHandler (port : Int = DEFAULT_OLLAMA_PORT, hostAddress: String = DEF
     """.trimIndent()
 
 
-        var requestModel = chatRequestBuilder.withMessage(OllamaChatMessageRole.SYSTEM, systemPrompt)
+        val requestModel = chatRequestBuilder.withMessage(OllamaChatMessageRole.SYSTEM, systemPrompt)
             .withMessage(OllamaChatMessageRole.USER, prompt)
             .withOptions(options)
             .build()
 
 
-        var response = ollamaAPI.chat(requestModel).responseModel
+        val response = ollamaAPI.chat(requestModel).responseModel
 
         // check if error
         if (response.error != null) {
