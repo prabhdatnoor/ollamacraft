@@ -1,4 +1,5 @@
 # Ollamacraft = Ollama in minecraft!
+![Curse Forge Downloads](https://cf.way2muchnoise.eu/full_1345462_downloads.svg)
 
 ##### Use as companion by asking questions or have it narrate events
 
